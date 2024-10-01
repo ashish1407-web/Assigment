@@ -8,12 +8,13 @@ const createBook = async function (req, res) {
         
         if (!bookDetails.price) { return res.status(400).send({ status: false, message: "price is required" }) }
       
-        if(!bookDetails.description) {return res.stauts(400).send({status:false,message:"Description is required"})}
+        if(!bookDetails.description) {return res.status(400).send({status:false,message:"Description is required"})}
 
         //if (typeof college.isDeleted !== " boolean") { return res.status(400).send({ status: false, message: "value must be in boolean" }) } 
         let bookCreated = await bookSchema.create(bookDetails)
        return res.status(201).send({ status:true,data: bookCreated })
     }catch (error){
+        console.log(error.message)
         res.status(500).send(error.message)
     
     }
@@ -51,15 +52,16 @@ const updateBook=async function(req,res){
     try{
     const params = req.params.bookId
     const requestUpdateBody = req.body
+    console.log(params)
     const {bookName,authorName,price,description } = requestUpdateBody;
-    const searchBook = await bookModel.findById({
+    const searchBook = await bookSchema.findById({
         _id: params,
     })
     if (!searchBook) {
         return res.status(404).send({ status: false, message: `Book does not exist by this ${params}.` })
     }
     if (searchBook.isDeleted == false) {
-        const changeDetails = await bookModel.findOneAndUpdate({ _id: params }, { bookName:bookName, authorName: authorName, price:price,description:description}, { new: true })
+        const changeDetails = await bookSchema.findOneAndUpdate({ _id: params }, { bookName:bookName, authorName: authorName, price:price,description:description}, { new: true })
 
         res.status(200).send({ status: true, message: "Successfully updated book details.", data: changeDetails })
     } else {
@@ -72,14 +74,14 @@ const updateBook=async function(req,res){
 const deleteBook=async function(req,res){
     try{
     const params = req.params.bookId
-    const searchBook = await bookModel.findById({
+    const searchBook = await bookSchema.findById({
         _id: params,
     })
     if (!searchBook) {
         return res.status(404).send({ status: false, message: `Book does not exist by this ${params}.` })
     }
     if (searchBook.isDeleted == false) {
-        const changeDetails = await bookModel.findOneAndUpdate({ _id: params }, { isDelete:true}, { new: true })
+        const changeDetails = await bookSchema.findOneAndUpdate({ _id: params }, { isDelete:true}, { new: true })
 
         res.status(200).send({ status: true, message: "Successfully book deleted successfully."})
     } else {

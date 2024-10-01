@@ -4,8 +4,8 @@ const speakeasy = require('speakeasy');
 const secret = speakeasy.generateSecret({ length: 20 }).base32;
 const registerUser = async function (req, res) {
     try {
-        let userDetails = req.files;
-        if (!userDetails.Name) { return res.status(400).send({ status: false, message: "name is required" }) }
+        let userDetails = req.body;
+        if (!userDetails.name) { return res.status(400).send({ status: false, message: "name is required" }) }
 
         if (!userDetails.age) { return res.status(400).send({ status: false, message: "age is required" }) }
 
@@ -13,10 +13,11 @@ const registerUser = async function (req, res) {
 
         if (!userDetails.email) { return res.stauts(400).send({ status: false, message: "email is required" }) }
 
-        let bookCreated = await bookSchema.create(bookDetails)
+        let bookCreated = await userSchema.create(userDetails)
         return res.status(201).send({ status: true, data: bookCreated })
 
     } catch (error) {
+        console.log(error.message);
     }
 }
 // Secret key (unique per user)
@@ -35,7 +36,8 @@ const LoginUser = async function (req, res) {
             return res.status(200).send({ status: true, msg: 'admin login successfully' });
         } else {
             const otp = generateOTP();
-            await userSchema.findByIdAndUpdate({ email:email},{otp:otp})
+             console.log(otp,email);
+            await userSchema.findOneAndUpdate({ email:email},{otp:otp})
             return res.status(201).send({ status: true, msg: "user is login successfully" })
         }
     } catch (err) {
@@ -44,13 +46,16 @@ const LoginUser = async function (req, res) {
 }
 const updateAddressByUser=async function(req,res){
 try{
-    const email=req.params;
+    const email=req.query.email;
   const {address}=req.body;
   if (!email) { return res.status(400).send({ status: false, message: "email is required" }) }
 
   if (!address) { return res.status(400).send({ status: false, message: "address is required" }) }
-  await userSchema.findOneAndUpdate({ email:email},{address:address})
+  console.log("here",email,address)
+  await userSchema.findOneAndUpdate({ email:email},{address:address}, { new: true })
+  return res.status(201).send({ status: true, msg: "user is updated  successfully" })
 }catch(err){
+    console.log(err.message)
     return res.status(500).send(err.message)
 }
 }

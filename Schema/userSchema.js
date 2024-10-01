@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-    Email: {
+    email: {
         type: String,
         required: true,
         trim: true,
@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
     },
     profileImage: {
         type: String,
-        required: true,
         trim: true
     },
    isAdmin:{
@@ -43,7 +42,7 @@ const userSchema = new mongoose.Schema({
     isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model('allBooks', userSchema) 
+module.exports = mongoose.model('allUsers', userSchema) 
 
 
 
